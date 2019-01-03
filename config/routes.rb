@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   root to: 'welcome#index'
 
-  resources :items, only: [:index, :show]
+  resources :items, only: [:index, :show] do
+    resources :reviews
+  end 
   resources :merchants, only: [:index]
 
   get '/cart', to: 'cart#index'
