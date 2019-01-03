@@ -12,6 +12,8 @@ RSpec.describe 'Profile Orders page', type: :feature do
 
     @item_1 = create(:item, user: @merchant_1)
     @item_2 = create(:item, user: @merchant_2)
+    @item_3 = create(:item, user: @merchant_1)
+    @item_4 = create(:item, user: @merchant_2)
   end
   context 'as a registered user' do
     describe 'should show a message when user no orders' do
@@ -78,6 +80,8 @@ RSpec.describe 'Profile Orders page', type: :feature do
         expect(page).to have_content("Created: #{@order.created_at}")
         expect(page).to have_content("Last Update: #{@order.last_update}")
         expect(page).to have_content("Status: #{@order.status}")
+        expect(page).to have_content("Item Count: #{@order.total_item_count}")
+        expect(page).to have_content("Total Cost: #{number_to_currency(@order.total_cost)}")
         within "#oitem-#{@oi_1.id}" do
           expect(page).to have_content(@oi_1.item.name)
           expect(page).to have_content(@oi_1.item.description)
@@ -88,6 +92,7 @@ RSpec.describe 'Profile Orders page', type: :feature do
           expect(page).to have_content("Subtotal: #{number_to_currency(@oi_1.price*@oi_1.quantity)}")
           expect(page).to have_content("Subtotal: #{number_to_currency(@oi_1.price*@oi_1.quantity)}")
           expect(page).to have_content("Fulfilled: No")
+          expect(page).to have_link("Review")
         end
         within "#oitem-#{@oi_2.id}" do
           expect(page).to have_content(@oi_2.item.name)
@@ -98,67 +103,38 @@ RSpec.describe 'Profile Orders page', type: :feature do
           expect(page).to have_content("Quantity: #{@oi_2.quantity}")
           expect(page).to have_content("Subtotal: #{number_to_currency(@oi_2.price*@oi_2.quantity)}")
           expect(page).to have_content("Fulfilled: Yes")
+          expect(page).to have_link("Review")
         end
-        expect(page).to have_content("Item Count: #{@order.total_item_count}")
-        expect(page).to have_content("Total Cost: #{number_to_currency(@order.total_cost)}")
       end
     end
-    describe 'should show a single order show page' do
-      before :each do
+    describe 'when you clink on review' do
+      it 'adds a review' do
         yesterday = 1.day.ago
-        @order = create(:completed_order, user: @user, created_at: yesterday)
-        @oi_1 = create(:fulfilled_order_item, order: @order, item: @item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
-        @oi_2 = create(:fulfilled_order_item, order: @order, item: @item_2, price: 2, quantity: 5, created_at: yesterday, updated_at: 2.hours.ago)
-      end
-      scenario 'when logged in as user' do
+        @order = create(:order, user: @user, created_at: yesterday)
+        @oi_1 = create(:order_item, order: @order, item: @item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
         @user.reload
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)
         visit profile_order_path(@order)
+
+
+      within "#oitem-#{@oi_1.id}" do
+        expect(page).to have_link("Review")
       end
-      scenario 'when logged in as admin' do
-        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@admin)
-        visit admin_user_order_path(@user, @order)
-      end
-      after :each do
-        expect(page).to have_content("Order ID #{@order.id}")
-        expect(page).to have_content("Created: #{@order.created_at}")
-        expect(page).to have_content("Last Update: #{@order.last_update}")
-        expect(page).to have_content("Status: completed")
-        within "#oitem-#{@oi_1.id}" do
-          expect(page).to have_content(@oi_1.item.name)
-          expect(page).to have_content(@oi_1.item.description)
-          expect(page.find("#item-#{@oi_1.item.id}-image")['src']).to have_content(@oi_1.item.image)
-          expect(page).to have_content("Merchant: #{@oi_1.item.user.name}")
-          expect(page).to have_content("Price: #{number_to_currency(@oi_1.price)}")
-          expect(page).to have_content("Quantity: #{@oi_1.quantity}")
-          expect(page).to have_content("Subtotal: #{number_to_currency(@oi_1.price*@oi_1.quantity)}")
-          expect(page).to have_content("Subtotal: #{number_to_currency(@oi_1.price*@oi_1.quantity)}")
-          expect(page).to have_content("Fulfilled: Yes")
-          expect(page).to have_link("Review")
 
-          click_on "Review"
+      click_on "Review"
 
-          expect(current_path).to eq(new_item_review_path)
-        end
-        within "#oitem-#{@oi_2.id}" do
-          expect(page).to have_content(@oi_2.item.name)
-          expect(page).to have_content(@oi_2.item.description)
-          expect(page.find("#item-#{@oi_2.item.id}-image")['src']).to have_content(@oi_2.item.image)
-          expect(page).to have_content("Merchant: #{@oi_2.item.user.name}")
-          expect(page).to have_content("Price: #{number_to_currency(@oi_2.price)}")
-          expect(page).to have_content("Quantity: #{@oi_2.quantity}")
-          expect(page).to have_content("Subtotal: #{number_to_currency(@oi_2.price*@oi_2.quantity)}")
-          expect(page).to have_content("Fulfilled: Yes")
-          expect(page).to have_link("Review")
+      expect(current_path).to eq(new_item_review_path(@oi_1.item))
+      
+      fill_in :item_review_title, with: "Good item"
+      fill_in :item_review_description, with: "I liked this item"
+      fill_in :item_review_rating, with: 5
+      click_button :submit
 
-          click_on "Review"
-
-          expect(current_path).to eq(new_item_review_path)
-        end
-        expect(page).to have_content("Item Count: #{@order.total_item_count}")
-        expect(page).to have_content("Total Cost: #{number_to_currency(@order.total_cost)}")
-      end
+      expect(current_path).to eq(profile_order_path(@order))
+      expect(page).to have_content("You reviewed this item")
+      expect(page).to_not have_content("Review")
     end
+   end
     describe 'allows me to cancel an order that is not yet complete' do
       before :each do
         @item = create(:item, user: @merchant_1, inventory: 100)
