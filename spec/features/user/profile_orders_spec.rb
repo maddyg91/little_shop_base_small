@@ -92,7 +92,6 @@ RSpec.describe 'Profile Orders page', type: :feature do
           expect(page).to have_content("Subtotal: #{number_to_currency(@oi_1.price*@oi_1.quantity)}")
           expect(page).to have_content("Subtotal: #{number_to_currency(@oi_1.price*@oi_1.quantity)}")
           expect(page).to have_content("Fulfilled: No")
-          expect(page).to have_link("Review")
         end
         within "#oitem-#{@oi_2.id}" do
           expect(page).to have_content(@oi_2.item.name)
@@ -103,37 +102,8 @@ RSpec.describe 'Profile Orders page', type: :feature do
           expect(page).to have_content("Quantity: #{@oi_2.quantity}")
           expect(page).to have_content("Subtotal: #{number_to_currency(@oi_2.price*@oi_2.quantity)}")
           expect(page).to have_content("Fulfilled: Yes")
-          expect(page).to have_link("Review")
         end
       end
-    end
-    describe 'when you clink on review' do
-      it 'adds a review' do
-        yesterday = 1.day.ago
-        @order = create(:order, user: @user, created_at: yesterday)
-        @oi_1 = create(:order_item, order: @order, item: @item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
-        @user.reload
-        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)
-        visit profile_order_path(@order)
-
-
-      within "#oitem-#{@oi_1.id}" do
-        expect(page).to have_link("Review")
-      end
-
-      click_on "Review"
-
-      expect(current_path).to eq(new_item_review_path(@oi_1.item))
-      
-      fill_in :item_review_title, with: "Good item"
-      fill_in :item_review_description, with: "I liked this item"
-      fill_in :item_review_rating, with: 5
-      click_button :submit
-
-      expect(current_path).to eq(profile_order_path(@order))
-      expect(page).to have_content("You reviewed this item")
-      expect(page).to_not have_content("Review")
-    end
    end
     describe 'allows me to cancel an order that is not yet complete' do
       before :each do
