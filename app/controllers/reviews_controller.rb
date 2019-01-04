@@ -29,21 +29,26 @@ class ReviewsController < ApplicationController
 
   def update
    @review = Review.find(params[:id])
-   if current_user.id == @review.user_id || current_admin?
+   if disabling_reviewer? || current_admin?
      if @review.update(review_params)
-       redirect_to item_reviews_path(params[:item_id], params[:id])
+       flash[:success] = "Success"
      else
        flash[:error] = "Update failed"
-       redirect_to item_reviews_path(params[:item_id], params[:id])
      end
    else
+     flash[:error] = "Action not permitted"
    end
+    redirect_to item_reviews_path(params[:item_id], params[:id])
   end
 
   private
 
   def review_params
     params.require(:review).permit(:title, :description, :rating, :active)
+  end
+
+  def disabling_reviewer?
+    current_user.id == @review.user_id && review_params[:active] == "false"
   end
 
 end

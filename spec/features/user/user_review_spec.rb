@@ -160,6 +160,43 @@ RSpec.describe 'Profile Orders page', type: :feature do
       click_on "Disable"
 
       expect(page).to_not have_link("Disable")
+      expect(page).to_not have_link("Enable")
+    end
+
+    it "as a user that did not review you cannot disable" do
+      user = create(:user)
+      merchant_1 = create(:merchant)
+      merchant_2 = create(:merchant)
+      item_1 = create(:item, user: merchant_1)
+      item_2 = create(:item, user: merchant_2)
+      yesterday = 1.day.ago
+      order = create(:completed_order, created_at: yesterday)
+      oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+      review = create(:review, item: item_1)
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+
+      visit item_reviews_path(oi_1.item)
+
+      expect(page).to_not have_link("Disable")
+      expect(page).to_not have_link("Enable")
+    end
+    it "admin disable and enable" do
+      admin = create(:admin)
+      merchant_1 = create(:merchant)
+      merchant_2 = create(:merchant)
+      item_1 = create(:item, user: merchant_1)
+      item_2 = create(:item, user: merchant_2)
+      yesterday = 1.day.ago
+      order = create(:completed_order, created_at: yesterday)
+      oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+      review = create(:review, item: item_1)
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(admin)
+
+      visit item_reviews_path(oi_1.item)
+
+      click_on "Disable"
+
+      expect(page).to_not have_link("Disable")
       expect(page).to have_link("Enable")
 
       click_on "Enable"

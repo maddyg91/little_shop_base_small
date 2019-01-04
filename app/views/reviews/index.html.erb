@@ -3,9 +3,11 @@
     <p>Title: <%= review.title %></p>
     <p>Description: <%= review.description %></p>
     <p>Rating: <%= review.rating %></p>
-    <% if review.active %>
-        <%=link_to("Disable", item_review_path(@item, review, review: {active: false}), method: :patch)%>
-    <% else review.active == false %>
-        <%=link_to("Enable", item_review_path(@item, review, review: {active: true}), method: :patch)%>
+    <% if current_user.id == review.user_id || current_admin? %>
+      <% if review.active %>
+          <%=link_to("Disable", item_review_path(@item, review, review: {active: false}), method: :patch)%>
+      <% elsif current_admin? && review.active == false %>
+          <%=link_to("Enable", item_review_path(@item, review, review: {active: true}), method: :patch)%>
+      <% end %>
     <% end %>
   <% end %>
