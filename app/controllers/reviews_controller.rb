@@ -13,9 +13,8 @@ class ReviewsController < ApplicationController
   def create
     @item = Item.find(params[:item_id])
     @review = @item.reviews.build(review_params)
-    @review.user = current_user
+    @review.user = current_user || current_admin?
     if @review.save
-      flash[:success] = "You added a review"
       redirect_to item_review_path(@item, @review)
     else
       render :new
