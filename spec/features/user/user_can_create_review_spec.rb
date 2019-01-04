@@ -4,7 +4,7 @@ include ActionView::Helpers::NumberHelper
 
 RSpec.describe 'Profile Orders page', type: :feature do
   describe 'when you clink on review' do
-    it 'adds a review' do
+    it 'it can see a review form and can submit it ' do
       @user = create(:user)
       @merchant_1 = create(:merchant)
       @merchant_2 = create(:merchant)
@@ -24,10 +24,15 @@ RSpec.describe 'Profile Orders page', type: :feature do
       click_on "Review"
 
       expect(current_path).to eq(new_item_review_path(@oi_1.item))
-      
+
       expect(page).to have_field("Title")
       expect(page).to have_field("Description")
       expect(page).to have_field("Rating")
+
+      click_on "Submit"
+
+      expect(current_path).to eq(profile_order_path(@order))
+      expect(page).to have_content("Your review has been added, visit the item page to see all the reviews")
     end
-  end
+  end 
 end
