@@ -7,7 +7,8 @@ class ReviewsController < ApplicationController
   end
 
   def show
-    @review = Review.find(params[:id])
+    @item = Item.find(params[:item_id])
+    @review = Review.find(params[:id])    
   end
 
   def create
