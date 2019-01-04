@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   resources :items, only: [:index, :show] do
     resources :reviews
-  end 
+  end
   resources :merchants, only: [:index]
 
   get '/cart', to: 'cart#index'
