@@ -125,84 +125,167 @@ RSpec.describe 'Profile Orders page', type: :feature do
       expect(page).to have_content("loved buying this item")
       expect(page).to have_content(5)
     end
-    it "can see a disable button" do
-      user = create(:user)
-      admin = create(:admin)
-      merchant_1 = create(:merchant)
-      merchant_2 = create(:merchant)
-      item_1 = create(:item, user: merchant_1)
-      item_2 = create(:item, user: merchant_2)
-      yesterday = 1.day.ago
-      order = create(:completed_order, user: user, created_at: yesterday)
-      oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
-      review = create(:review, user: user, item: item_1)
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+    context 'from index page' do
+      it "can see a disable button" do
+        user = create(:user)
+        admin = create(:admin)
+        merchant_1 = create(:merchant)
+        merchant_2 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_2)
+        yesterday = 1.day.ago
+        order = create(:completed_order, user: user, created_at: yesterday)
+        oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+        review = create(:review, user: user, item: item_1)
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
 
-      visit item_reviews_path(oi_1.item)
+        visit item_reviews_path(oi_1.item)
 
-      expect(page).to have_link("Disable")
+        expect(page).to have_link("Disable")
+      end
+
+      it "can see a disable button" do
+        user = create(:user)
+        merchant_1 = create(:merchant)
+        merchant_2 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_2)
+        yesterday = 1.day.ago
+        order = create(:completed_order, user: user, created_at: yesterday)
+        oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+        review = create(:review, user: user, item: item_1)
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+
+        visit item_reviews_path(oi_1.item)
+
+        click_on "Disable"
+
+        expect(page).to_not have_link("Disable")
+        expect(page).to_not have_link("Enable")
+      end
+
+      it "as a user that did not review " do
+        user = create(:user)
+        merchant_1 = create(:merchant)
+        merchant_2 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_2)
+        yesterday = 1.day.ago
+        order = create(:completed_order, created_at: yesterday)
+        oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+        review = create(:review, item: item_1)
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+
+        visit item_reviews_path(oi_1.item)
+
+        expect(page).to_not have_link("Disable")
+        expect(page).to_not have_link("Enable")
+      end
+      it "admin disable and enable" do
+        admin = create(:admin)
+        merchant_1 = create(:merchant)
+        merchant_2 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_2)
+        yesterday = 1.day.ago
+        order = create(:completed_order, created_at: yesterday)
+        oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+        review = create(:review, item: item_1)
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(admin)
+
+        visit item_reviews_path(oi_1.item)
+
+        click_on "Disable"
+
+        expect(page).to_not have_link("Disable")
+        expect(page).to have_link("Enable")
+
+        click_on "Enable"
+
+        expect(page).to have_link("Disable")
+        expect(page).to_not have_link("Enable")
+      end
     end
+    context 'from show page' do
+      it "can see a disable button" do
+        user = create(:user)
+        admin = create(:admin)
+        merchant_1 = create(:merchant)
+        merchant_2 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_2)
+        yesterday = 1.day.ago
+        order = create(:completed_order, user: user, created_at: yesterday)
+        oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+        review = create(:review, user: user, item: item_1)
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
 
-    it "can see a disable button" do
-      user = create(:user)
-      merchant_1 = create(:merchant)
-      merchant_2 = create(:merchant)
-      item_1 = create(:item, user: merchant_1)
-      item_2 = create(:item, user: merchant_2)
-      yesterday = 1.day.ago
-      order = create(:completed_order, user: user, created_at: yesterday)
-      oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
-      review = create(:review, user: user, item: item_1)
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        visit item_review_path(oi_1.item, review)
 
-      visit item_reviews_path(oi_1.item)
+        expect(page).to have_link("Disable")
+      end
 
-      click_on "Disable"
+      it "can see a disable button" do
+        user = create(:user)
+        merchant_1 = create(:merchant)
+        merchant_2 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_2)
+        yesterday = 1.day.ago
+        order = create(:completed_order, user: user, created_at: yesterday)
+        oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+        review = create(:review, user: user, item: item_1)
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
 
-      expect(page).to_not have_link("Disable")
-      expect(page).to_not have_link("Enable")
-    end
+        visit item_review_path(oi_1.item, review)
 
-    it "as a user that did not review you cannot disable" do
-      user = create(:user)
-      merchant_1 = create(:merchant)
-      merchant_2 = create(:merchant)
-      item_1 = create(:item, user: merchant_1)
-      item_2 = create(:item, user: merchant_2)
-      yesterday = 1.day.ago
-      order = create(:completed_order, created_at: yesterday)
-      oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
-      review = create(:review, item: item_1)
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        click_on "Disable"
 
-      visit item_reviews_path(oi_1.item)
+        expect(page).to_not have_link("Disable")
+        expect(page).to_not have_link("Enable")
+      end
 
-      expect(page).to_not have_link("Disable")
-      expect(page).to_not have_link("Enable")
-    end
-    it "admin disable and enable" do
-      admin = create(:admin)
-      merchant_1 = create(:merchant)
-      merchant_2 = create(:merchant)
-      item_1 = create(:item, user: merchant_1)
-      item_2 = create(:item, user: merchant_2)
-      yesterday = 1.day.ago
-      order = create(:completed_order, created_at: yesterday)
-      oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
-      review = create(:review, item: item_1)
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(admin)
+      it "as a user that did not review " do
+        user = create(:user)
+        merchant_1 = create(:merchant)
+        merchant_2 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_2)
+        yesterday = 1.day.ago
+        order = create(:completed_order, created_at: yesterday)
+        oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+        review = create(:review, item: item_1)
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
 
-      visit item_reviews_path(oi_1.item)
+        visit item_review_path(oi_1.item, review)
 
-      click_on "Disable"
+        expect(page).to_not have_link("Disable")
+        expect(page).to_not have_link("Enable")
+      end
+      it "admin disable and enable" do
+        admin = create(:admin)
+        merchant_1 = create(:merchant)
+        merchant_2 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_2)
+        yesterday = 1.day.ago
+        order = create(:completed_order, created_at: yesterday)
+        oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+        review = create(:review, item: item_1)
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(admin)
 
-      expect(page).to_not have_link("Disable")
-      expect(page).to have_link("Enable")
+        visit item_review_path(oi_1.item, review)
 
-      click_on "Enable"
+        click_on "Disable"
 
-      expect(page).to have_link("Disable")
-      expect(page).to_not have_link("Enable")
+        expect(page).to_not have_link("Disable")
+        expect(page).to have_link("Enable")
+
+        click_on "Enable"
+
+        expect(page).to have_link("Disable")
+        expect(page).to_not have_link("Enable")
+      end
     end
   end
 end
