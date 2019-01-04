@@ -2,19 +2,30 @@ class ReviewsController < ApplicationController
 
   def new
     @item = Item.find(params[:item_id])
+    @order = Order.where(id: params[:order_id]).first
     @review = Review.new
   end
 
-  def create
+  def show
+    @review = Review.find(params[:id])
+  end
 
+  def create
     @item = Item.find(params[:item_id])
-    @order = Order.joins(:reviews).where("user_id = reviews.user_id")
-    @review = @item.reviews
+    @review = @item.reviews.build(review_params)
+    @review.user = current_user
     if @review.save
-      redirect_to profile_order_path(@order)
+      flash[:success] = "You added a review"
+      redirect_to item_review_path(@item, @review)
     else
       render :new
     end
+  end
+
+  private
+
+  def review_params
+    params.require(:review).permit(:title, :description, :rating)
   end
 
 end
