@@ -20,7 +20,7 @@ RSpec.describe 'Profile Orders page', type: :feature do
       within "#oitem-#{oi_1.id}" do
         expect(page).to have_link("Review")
       end
-
+      
       click_on "Review"
 
       expect(current_path).to eq(new_item_review_path(oi_1.item))
@@ -89,15 +89,7 @@ RSpec.describe 'Profile Orders page', type: :feature do
 
       visit admin_user_order_path(user, order)
 
-      expect(page).to have_link("Review")
-
-      click_on "Review"
-
-      expect(current_path).to eq(new_item_review_path(oi_1.item))
-
-      expect(page).to have_field("Title")
-      expect(page).to have_field("Description")
-      expect(page).to have_field("Rating")
+      expect(page).to_not have_link("Review")
     end
 
     it "admin can create review " do
@@ -287,7 +279,7 @@ RSpec.describe 'Profile Orders page', type: :feature do
         expect(page).to_not have_link("Enable")
       end
     end
-    xit 'as a user I can only review an item once per order' do
+    it 'as a user I can only review an item once per order' do
       user = create(:user)
       merchant_1 = create(:merchant)
       merchant_2 = create(:merchant)
@@ -317,7 +309,7 @@ RSpec.describe 'Profile Orders page', type: :feature do
       visit profile_order_path(order)
 
       within "#oitem-#{oi_1.id}" do
-        expect(page).to have_link("See review")
+        expect(page).to have_link("See ratings")
       end
     end
 
