@@ -2,10 +2,10 @@
   <p>Title: <%= @review.title %></p>
   <p>Description: <%= @review.description %></p>
   <p>Rating: <%= @review.rating %></p>
-  <% if current_user.id == @review.user_id || current_admin? %>
-    <% if @review.active %>
-        <%=link_to("Disable", item_review_path(@item, @review, review: {active: false}), method: :patch)%>
-    <% elsif current_admin? && @review.active == false %>
-        <%=link_to("Enable", item_review_path(@item, @review, review: {active: true}), method: :patch)%>
-    <% end %>
+  <% if (current_user.id == @review.user_id || current_admin?) && @review.active %>
+      <%=link_to("Disable", item_review_path(@item, @review, review: {active: false}), method: :patch)%>
+      <%=link_to("Edit", item_review_path(@item, @review), method: :put)%>
+      <%=link_to("Delete", item_review_path(@item, @review), method: :destroy)%>
+  <% elsif current_admin? && @review.active == false %>
+      <%=link_to("Enable", item_review_path(@item, @review, review: {active: true}), method: :patch)%>
   <% end %>

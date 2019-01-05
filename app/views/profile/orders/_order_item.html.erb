@@ -11,6 +11,7 @@
     <p>Fulfilled: <%= oitem.fulfilled ? 'Yes' : 'No' %></p>
     <% if oitem.order.status == "completed" && current_user.reviewable?(oitem) %>
     <p><%= link_to "Review", new_item_review_path(oitem.item) %></p>
+    <p><%= link_to "See Review", item_review_path(oitem.item) %></p>
     <% end %>
   </div>
 </div>
