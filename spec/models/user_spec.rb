@@ -181,12 +181,13 @@ RSpec.describe User, type: :model do
         order_3 = create(:completed_order, user: user_1)
         oi_1 = create(:fulfilled_order_item, order: order_1, item: item_1)
         oi_2 = create(:fulfilled_order_item, order: order_2, item: item_2)
-        oi_3 = create(:fulfilled_order_item, order: order_3, item: item_3)
-        review_1 = create(:review, item:item_1)
-        review_2 = create(:review, item:item_2)
+        oi_3 = create(:fulfilled_order_item, order: order_3, item: item_3, item: item_2)
+        review_1 = create(:review, item:item_1, user: user_1)
+        review_2 = create(:review, item:item_2, user: user_1)
 
-        expect(user_1.reviewable?(item_1)).to eq(false)
-        expect(user_1.reviewable?(item_3)).to eq(true)
+        expect(user_1.reviewable?(oi_1)).to eq(false)
+        expect(user_1.reviewable?(oi_2)).to eq(true)
+        expect(user_1.reviewable?(oi_3)).to eq(true)
     end
   end
 end

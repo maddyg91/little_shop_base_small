@@ -116,8 +116,8 @@ class User < ApplicationRecord
   end
 
   def reviewable?(oitem)
-    order_count =
-    review_count = 
+    order_count = self.order_items.where(order_items: {item_id: oitem.item_id}).count
+    review_count = self.reviews.count
     order_count > review_count
   end
 end
