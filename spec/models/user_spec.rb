@@ -170,5 +170,24 @@ RSpec.describe User, type: :model do
         expect(@merchant.top_3_revenue_users[2].revenue).to eq(120)
       end
     end
+    it '.reviewable?' do
+        user_1 = create(:user)
+        merchant_1 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_1)
+        item_3 = create(:item, user: merchant_1)
+        order_1 = create(:completed_order, user: user_1)
+        order_2 = create(:completed_order, user: user_1)
+        order_3 = create(:completed_order, user: user_1)
+        oi_1 = create(:fulfilled_order_item, order: order_1, item: item_1)
+        oi_2 = create(:fulfilled_order_item, order: order_2, item: item_2)
+        oi_3 = create(:fulfilled_order_item, order: order_3, item: item_3, item: item_2)
+        review_1 = create(:review, item:item_1, user: user_1)
+        review_2 = create(:review, item:item_2, user: user_1)
+
+        expect(user_1.reviewable?(oi_1)).to eq(false)
+        expect(user_1.reviewable?(oi_2)).to eq(true)
+        expect(user_1.reviewable?(oi_3)).to eq(true)
+    end
   end
 end

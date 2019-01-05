@@ -5,6 +5,8 @@ class User < ApplicationRecord
   has_many :orders
   has_many :order_items, through: :orders
 
+  has_many :reviews
+
   validates_presence_of :name, :address, :city, :state, :zip
   validates :email, presence: true, uniqueness: true
 
@@ -111,5 +113,11 @@ class User < ApplicationRecord
       .group(:id)
       .order('revenue desc')
       .limit(3)
+  end
+
+  def reviewable?(oitem)
+    order_count = self.order_items.where(order_items: {item_id: oitem.item_id}).count
+    review_count = self.reviews.where(reviews: {item_id: oitem.item_id}).count
+    order_count > review_count
   end
 end
