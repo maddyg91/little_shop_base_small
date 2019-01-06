@@ -14,4 +14,12 @@ class OrderItem < ApplicationRecord
   def subtotal
     quantity * price
   end
+
+  def self.for_user_and_item_id(item_id, user)
+    joins(:order)
+    .joins("INNER JOIN users ON orders.user_id = users.id").where(users: {id: user.id})
+    .where(order_items: {item_id: item_id})
+    .distinct
+    .count(:order_id)
+  end
 end
