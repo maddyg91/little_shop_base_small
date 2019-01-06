@@ -33,6 +33,21 @@ class ReviewsController < ApplicationController
   end
 
   def update
+    @item = Item.find(params[:item_id])
+    @review = Review.find(params[:id])
+    if current_user
+      if @review.update(review_params)
+        flash[:success] = "Review was updated"
+
+        redirect_to item_review_path(params[:item_id], params[:id])
+      else
+        flash[:error]
+        render :edit
+      end
+    end
+  end
+
+  def disable_enable
    @review = Review.find(params[:id])
    if disabling_reviewer? || current_admin?
      if @review.update(review_params)
@@ -43,7 +58,7 @@ class ReviewsController < ApplicationController
    else
      flash[:error] = "Action not permitted"
    end
-    redirect_to item_reviews_path(params[:item_id], params[:id])
+    redirect_to item_review_path(params[:item_id], params[:id])
   end
 
 

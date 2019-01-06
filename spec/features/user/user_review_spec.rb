@@ -361,7 +361,7 @@ RSpec.describe 'Profile Orders page', type: :feature do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
 
       visit item_review_path(oi_1.item, review)
-      
+
       click_on "Edit"
 
       expect(current_path).to eq(edit_item_review_path(oi_1.item, review))
@@ -369,6 +369,58 @@ RSpec.describe 'Profile Orders page', type: :feature do
       expect(page).to have_field("Title")
       expect(page).to have_field("Description")
       expect(page).to have_field("Rating")
+    end
+    it "can edit review" do
+      user = create(:user)
+      admin = create(:admin)
+      merchant_1 = create(:merchant)
+      merchant_2 = create(:merchant)
+      item_1 = create(:item, user: merchant_1)
+      item_2 = create(:item, user: merchant_2)
+      yesterday = 1.day.ago
+      order = create(:completed_order, user: user, created_at: yesterday)
+      oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+      review = create(:review, user: user, item: item_1)
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+
+      visit edit_item_review_path(oi_1.item, review)
+
+      fill_in :Title, with: "Item 1"
+      fill_in :Description, with: "description"
+      fill_in :Rating, with: 4
+
+      click_on "Update Review"
+
+      expect(current_path).to eq(item_review_path(oi_1.item, review))
+      expect(page).to have_content("Item 1")
+      expect(page).to have_content("description")
+      expect(page).to have_content(4)
+    end
+    it "can edit review" do
+      user = create(:user)
+      admin = create(:admin)
+      merchant_1 = create(:merchant)
+      merchant_2 = create(:merchant)
+      item_1 = create(:item, user: merchant_1)
+      item_2 = create(:item, user: merchant_2)
+      yesterday = 1.day.ago
+      order = create(:completed_order, user: user, created_at: yesterday)
+      oi_1 = create(:fulfilled_order_item, order: order, item: item_1, price: 1, quantity: 3, created_at: yesterday, updated_at: yesterday)
+      review = create(:review, user: user, item: item_1)
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+
+      visit edit_item_review_path(oi_1.item, review)
+
+      fill_in :Title, with: ""
+      fill_in :Description, with: ""
+      fill_in :Rating, with: ""
+
+      click_on "Update Review"
+
+      expect(page).to have_content("Title can't be blank")
+      expect(page).to have_content("Description can't be blank")
+      expect(page).to have_content("Rating can't be blank")
+      expect(page).to have_content("Rating is not a number")
     end
   end
 end
