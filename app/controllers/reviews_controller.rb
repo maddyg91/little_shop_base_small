@@ -27,6 +27,11 @@ class ReviewsController < ApplicationController
     end
   end
 
+  def edit
+    @item = Item.find(params[:item_id])
+    @review = Review.find(params[:id])
+  end
+
   def update
    @review = Review.find(params[:id])
    if disabling_reviewer? || current_admin?
@@ -40,6 +45,7 @@ class ReviewsController < ApplicationController
    end
     redirect_to item_reviews_path(params[:item_id], params[:id])
   end
+
 
   private
 
