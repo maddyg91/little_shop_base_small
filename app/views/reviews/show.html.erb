@@ -5,7 +5,7 @@
     <p>Rating: <%= @review.rating %></p>
       <%=link_to("Disable", item_review_disable_enable_path(@item, @review, review: {active: false}), method: :patch)%>
       <%=link_to("Edit", edit_item_review_path(@item, @review))%>
-      <%=link_to("Delete", item_review_path(@item, @review), method: :destroy)%>
+      <%=link_to("Delete", item_review_path(@item, @review), method: :delete)%>
   <% elsif current_admin? && @review.active == false %>
       <%=link_to("Enable", item_review_disable_enable_path(@item, @review, review: {active: true}), method: :patch)%>
   <% end %>

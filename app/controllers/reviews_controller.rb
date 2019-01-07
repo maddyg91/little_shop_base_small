@@ -47,6 +47,7 @@ class ReviewsController < ApplicationController
   end
 
   def disable_enable
+   @item = Item.find(params[:item_id])
    @review = Review.find(params[:id])
    if disabling_reviewer? || current_admin?
      if @review.update(review_params)
@@ -60,6 +61,20 @@ class ReviewsController < ApplicationController
     redirect_to item_review_path(params[:item_id], params[:id])
   end
 
+  def destroy
+    @item = Item.find(params[:item_id])
+    @review = Review.find(params[:id])
+    if disabling_reviewer? || current_admin?
+      if @review.destroy
+        flash[:success] = "Your review is deleted"
+      else
+        flash[:error] = "Failed to delete"
+      end
+      redirect_to item_reviews_path(params[:item_id])
+    else
+      render file: 'errors/not_found'
+    end
+  end
 
   private
 
@@ -68,7 +83,7 @@ class ReviewsController < ApplicationController
   end
 
   def disabling_reviewer?
-    current_user.id == @review.user_id && review_params[:active] == "false"
+    current_user.id == @review.user_id && params[:review] && params[:review][:active] == "false"
   end
 
 end
