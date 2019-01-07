@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   resources :items, only: [:index, :show] do
     resources :reviews
-    patch ' /items/:item_id/reviews/:id', to: 'reviews#disable_enable', as: 'review_disable_enable'
+    patch '/items/:item_id/reviews/:id', to: 'reviews#disable_enable', as: 'review_disable_enable'
   end
   resources :merchants, only: [:index]
 

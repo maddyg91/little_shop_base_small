@@ -38,10 +38,9 @@ class ReviewsController < ApplicationController
     if current_user
       if @review.update(review_params)
         flash[:success] = "Review was updated"
-
         redirect_to item_review_path(params[:item_id], params[:id])
       else
-        flash[:error]
+        flash[:error] = "Something went wrong"
         render :edit
       end
     end
