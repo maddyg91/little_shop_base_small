@@ -42,4 +42,10 @@ class Item < ApplicationRecord
   def ever_ordered?
     OrderItem.find_by_item_id(self.id) !=  nil
   end
+
+  def reviewable?(user)
+    order_count = self.order_items.for_user_and_item_id(id, user)
+    review_count = self.reviews.count_by_user(id, user)
+    order_count > review_count
+  end
 end
