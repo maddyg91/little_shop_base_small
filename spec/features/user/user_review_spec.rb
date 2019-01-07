@@ -236,6 +236,21 @@ RSpec.describe 'Profile Orders page', type: :feature do
       expect(page).to have_no_content(review.description)
       expect(page).to have_no_content(review.rating)
     end
+
+    it "can see a delete button" do
+      review = create(:review, user: @user, item: @item_1)
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)
+
+      visit item_review_path(@oi_1.item, review)
+
+      click_on "Delete"
+
+      expect(current_path).to eq(item_reviews_path(@oi_1.item))
+      expect(page).to have_content("Your review is deleted")
+      expect(page).to have_no_content(review.title)
+      expect(page).to have_no_content(review.description)
+      expect(page).to have_no_content(review.rating)
+    end
     it "can see a edit button" do
       review = create(:review, user: @user, item: @item_1)
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)
