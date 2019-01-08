@@ -125,16 +125,31 @@ class User < ApplicationRecord
     end
   end
 
-  def total_spent_for_merchant
-    55
+  def self.total_spent_for_merchant
+
   end
 
-  def total_spent
-    100
+  def self.total_spent
+       joins(:order_items)
+       .group(:id, :name, :email)
+       .select(:id)
+       .select("SUM(order_items.price * order_items.quantity) AS total_spent")
   end
 
-  def self.current_users
-    User.where(role: "default")
+  def self.current_users(merchant)
+        where(role: "default")
+        .joins(order_items: :item)
         .where(active: true)
+        .where("items.merchant_id = ?", merchant.id)
+        .where("order_items.fulfilled = true")
+        .group(:id)
+  end
+
+  def self.potential_users(merchant)
+        where(role: "default")
+        .joins(order_items: :item)
+        .where(active: true)
+        .where.not("items.merchant_id = ?", merchant.id)
+        .group(:id)
   end
 end
