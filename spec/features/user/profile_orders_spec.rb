@@ -12,6 +12,8 @@ RSpec.describe 'Profile Orders page', type: :feature do
 
     @item_1 = create(:item, user: @merchant_1)
     @item_2 = create(:item, user: @merchant_2)
+    @item_3 = create(:item, user: @merchant_1)
+    @item_4 = create(:item, user: @merchant_2)
   end
   context 'as a registered user' do
     describe 'should show a message when user no orders' do
@@ -78,6 +80,8 @@ RSpec.describe 'Profile Orders page', type: :feature do
         expect(page).to have_content("Created: #{@order.created_at}")
         expect(page).to have_content("Last Update: #{@order.last_update}")
         expect(page).to have_content("Status: #{@order.status}")
+        expect(page).to have_content("Item Count: #{@order.total_item_count}")
+        expect(page).to have_content("Total Cost: #{number_to_currency(@order.total_cost)}")
         within "#oitem-#{@oi_1.id}" do
           expect(page).to have_content(@oi_1.item.name)
           expect(page).to have_content(@oi_1.item.description)
@@ -99,10 +103,8 @@ RSpec.describe 'Profile Orders page', type: :feature do
           expect(page).to have_content("Subtotal: #{number_to_currency(@oi_2.price*@oi_2.quantity)}")
           expect(page).to have_content("Fulfilled: Yes")
         end
-        expect(page).to have_content("Item Count: #{@order.total_item_count}")
-        expect(page).to have_content("Total Cost: #{number_to_currency(@order.total_cost)}")
       end
-    end
+   end
     describe 'allows me to cancel an order that is not yet complete' do
       before :each do
         @item = create(:item, user: @merchant_1, inventory: 100)

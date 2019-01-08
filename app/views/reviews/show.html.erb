@@ -1,0 +1,11 @@
+  <% if (current_user.id == @review.user_id || current_admin?) && @review.active %>
+    <h3>Review for item: <%= @review.item_id %></h3>
+    <p>Title: <%= @review.title %></p>
+    <p>Description: <%= @review.description %></p>
+    <p>Rating: <%= @review.rating %></p>
+      <%=link_to("Disable", item_review_disable_enable_path(@item, @review, review: {active: false}), method: :patch)%>
+      <%=link_to("Edit", edit_item_review_path(@item, @review))%>
+      <%=link_to("Delete", item_review_path(@item, @review), method: :delete)%>
+  <% elsif current_admin? && @review.active == false %>
+      <%=link_to("Enable", item_review_disable_enable_path(@item, @review, review: {active: true}), method: :patch)%>
+  <% end %>

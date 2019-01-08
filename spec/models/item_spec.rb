@@ -66,5 +66,33 @@ RSpec.describe Item, type: :model do
       expect(item_1.ever_ordered?).to eq(true)
       expect(item_2.ever_ordered?).to eq(false)
     end
+    it '.reviewable?' do
+        user_1 = create(:user)
+        merchant_1 = create(:merchant)
+        item_1 = create(:item, user: merchant_1)
+        item_2 = create(:item, user: merchant_1)
+        item_3 = create(:item, user: merchant_1)
+        order_1 = create(:completed_order, user: user_1)
+        order_2 = create(:completed_order, user: user_1)
+        order_3 = create(:completed_order, user: user_1)
+        oi_1 = create(:fulfilled_order_item, order: order_1, item: item_1)
+        oi_2 = create(:fulfilled_order_item, order: order_2, item: item_2)
+        oi_3 = create(:fulfilled_order_item, order: order_3, item: item_3)
+        oi_4 = create(:fulfilled_order_item, order: order_3, item: item_2)
+        review_1 = create(:review, item:item_1, user: user_1)
+        review_2 = create(:review, item:item_2, user: user_1)
+
+        expect(OrderItem.for_user_and_item_id(item_1.id, user_1)).to eq(1)
+        expect(Review.count_by_user(item_1.id, user_1)).to eq(1)
+        expect(item_1.reviewable?(user_1)).to eq(false)
+
+        expect(OrderItem.for_user_and_item_id(item_2.id, user_1)).to eq(2)
+        expect(Review.count_by_user(item_2.id, user_1)).to eq(1)
+        expect(item_2.reviewable?(user_1)).to eq(true)
+
+        expect(OrderItem.for_user_and_item_id(item_3.id, user_1)).to eq(1)
+        expect(Review.count_by_user(item_3.id, user_1)).to eq(0)
+        expect(item_3.reviewable?(user_1)).to eq(true)
+    end
   end
 end

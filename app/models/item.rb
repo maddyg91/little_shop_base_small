@@ -2,6 +2,7 @@ class Item < ApplicationRecord
   belongs_to :user, foreign_key: 'merchant_id'
   has_many :order_items
   has_many :orders, through: :order_items
+  has_many :reviews
 
   validates_presence_of :name, :description
   validates :price, presence: true, numericality: {
@@ -40,5 +41,11 @@ class Item < ApplicationRecord
 
   def ever_ordered?
     OrderItem.find_by_item_id(self.id) !=  nil
+  end
+
+  def reviewable?(user)
+    order_count = self.order_items.for_user_and_item_id(id, user)
+    review_count = self.reviews.count_by_user(id, user)
+    order_count > review_count
   end
 end

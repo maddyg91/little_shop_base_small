@@ -9,5 +9,9 @@
     <p>Quantity: <%= oitem.quantity %></p>
     <p>Subtotal: <%= number_to_currency(oitem.subtotal) %></p>
     <p>Fulfilled: <%= oitem.fulfilled ? 'Yes' : 'No' %></p>
+    <p><%= link_to "See ratings", item_reviews_path(oitem.item) %></p>
+    <% if reviewable?(oitem, current_user) %>
+      <p><%= link_to "Review", new_item_review_path(oitem.item) %></p>
+    <% end %>
   </div>
 </div>
