@@ -1,6 +1,6 @@
 <h3>All reviews for item: <%= @item.name %></h3>
   <% @reviews.each do |review| %>
-    <p>Review id: <%= review.id %></p>
+    <p><%= link_to "Review id: #{review.id}", item_review_path(@item, review)%></p>
     <p>Title: <%= review.title %></p>
     <p>Description: <%= review.description %></p>
     <p>Rating: <%= review.rating %></p>
