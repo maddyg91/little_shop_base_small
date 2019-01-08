@@ -115,4 +115,26 @@ class User < ApplicationRecord
       .limit(3)
   end
 
+  def self.to_csv(attributes = {})
+    attributes = %w{name email total_spent_for_merchant total_spent}
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+      all.each do |data|
+        csv << attributes.map{|attr| data.send(attr)}
+      end
+    end
+  end
+
+  def total_spent_for_merchant
+    55
+  end
+
+  def total_spent
+    100
+  end
+
+  def self.current_users
+    User.where(role: "default")
+        .where(active: true)
+  end
 end

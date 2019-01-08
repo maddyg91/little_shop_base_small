@@ -24,6 +24,8 @@ RSpec.describe User, type: :model do
         @user_2 = create(:user, city: 'NYC', state: 'NY')
         @user_3 = create(:user, city: 'Seattle', state: 'WA')
         @user_4 = create(:user, city: 'Seattle', state: 'FL')
+        @user_5 = create(:inactive_user)
+        @user_6 = create(:user)
 
         @merchant_1, @merchant_2, @merchant_3 = create_list(:merchant, 3)
         @item_1 = create(:item, user: @merchant_1)
@@ -75,6 +77,10 @@ RSpec.describe User, type: :model do
         expect(User.bottom_3_fulfilling_merchants[2]).to eq(@merchant_1)
         aft = User.bottom_3_fulfilling_merchants[2].avg_fulfillment_time
         expect(aft[0..7]).to eq('00:01:00')
+      end
+      it '.current_users' do
+
+        expect(User.current_users).to eq([@user_1, @user_2, @user_3, @user_4])
       end
     end
   end
