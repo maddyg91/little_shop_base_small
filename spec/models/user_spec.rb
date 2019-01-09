@@ -24,6 +24,8 @@ RSpec.describe User, type: :model do
         @user_2 = create(:user, city: 'NYC', state: 'NY')
         @user_3 = create(:user, city: 'Seattle', state: 'WA')
         @user_4 = create(:user, city: 'Seattle', state: 'FL')
+        @user_5 = create(:inactive_user)
+        @user_6 = create(:user)
 
         @merchant_1, @merchant_2, @merchant_3 = create_list(:merchant, 3)
         @item_1 = create(:item, user: @merchant_1)
@@ -76,6 +78,49 @@ RSpec.describe User, type: :model do
         aft = User.bottom_3_fulfilling_merchants[2].avg_fulfillment_time
         expect(aft[0..7]).to eq('00:01:00')
       end
+    end
+  end
+  describe 'csv methods' do
+    before :each do
+      @user_1 = create(:user, city: 'Denver', state: 'CO')
+      @user_2 = create(:user, city: 'NYC', state: 'NY')
+      @user_3 = create(:user, city: 'Seattle', state: 'WA')
+      @user_4 = create(:user, city: 'Seattle', state: 'FL')
+      @user_5 = create(:inactive_user)
+      @user_6 = create(:user)
+
+      @merchant_1, @merchant_2, @merchant_3 = create_list(:merchant, 3)
+      @item_1 = create(:item, user: @merchant_1)
+      @item_2 = create(:item, user: @merchant_2)
+      @item_3 = create(:item, user: @merchant_3)
+
+      @order_1 = create(:completed_order, user: @user_1)
+      @oi_1 = create(:fulfilled_order_item, item: @item_1, order: @order_1, quantity: 100, price: 100, created_at: 10.minutes.ago, updated_at: 9.minute.ago)
+
+      @order_2 = create(:completed_order, user: @user_2)
+      @oi_2 = create(:fulfilled_order_item, item: @item_2, order: @order_2, quantity: 300, price: 300, created_at: 2.days.ago, updated_at: 1.minute.ago)
+
+      @order_3 = create(:completed_order, user: @user_3)
+      @oi_3 = create(:fulfilled_order_item, item: @item_3, order: @order_3, quantity: 200, price: 200, created_at: 10.minutes.ago, updated_at: 5.minute.ago)
+
+      @order_4 = create(:completed_order, user: @user_4)
+      @oi_4 = create(:fulfilled_order_item, item: @item_3, order: @order_4, quantity: 201, price: 200, created_at: 10.minutes.ago, updated_at: 5.minute.ago)
+
+      @order_5 = create(:completed_order, user: @user_1)
+      @oi_4 = create(:fulfilled_order_item, item: @item_3, order: @order_5, quantity: 201, price: 200, created_at: 10.minutes.ago, updated_at: 5.minute.ago)
+    end
+    it '.current_users' do
+
+      expect(User.current_users(@merchant_1)).to eq([@user_1])
+    end
+
+    it '#total_spent' do
+      expect(@user_1.total_spent).to eq(50_200)
+    end
+
+    it '#total_spent_for_merchant' do
+
+      expect(@user_1.total_spent_for_merchant(@merchant_1)).to eq(10_000)
     end
   end
 

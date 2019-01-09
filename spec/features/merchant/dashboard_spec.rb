@@ -18,6 +18,13 @@ RSpec.describe 'Merchant Dashboard page' do
       end
       expect(page).to_not have_link('Edit Profile')
     end
+    it 'should see a link to current users' do
+      merchant = create(:merchant)
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant)
+      visit dashboard_path
+
+      expect(page).to have_link("Current Users")
+    end
     describe 'should show pending orders containing items I sell' do
       scenario "unless I don't have any..." do
         merchant = create(:merchant)
@@ -273,8 +280,5 @@ RSpec.describe 'Merchant Dashboard page' do
         end
       end
     end
-  end
-
-  context 'as an admin' do
   end
 end
