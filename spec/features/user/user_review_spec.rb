@@ -68,6 +68,21 @@ RSpec.describe 'Profile Orders page', type: :feature do
       expect(page).to have_content(5)
     end
 
+    it "cannot create review " do
+      @user.reload
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)
+
+      visit new_item_review_path(@oi_1.item)
+
+      fill_in :review_title, with: ""
+      fill_in :review_description, with: ""
+      fill_in :review_rating, with: nil
+
+      click_on "Submit"
+
+      expect(page).to have_content("review did not create")
+    end
+
     it "admin can see a form to review review " do
 
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@admin)
@@ -251,6 +266,7 @@ RSpec.describe 'Profile Orders page', type: :feature do
       expect(page).to have_no_content(review.description)
       expect(page).to have_no_content(review.rating)
     end
+    
     it "can see a edit button" do
       review = create(:review, user: @user, item: @item_1)
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)

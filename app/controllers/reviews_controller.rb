@@ -24,6 +24,7 @@ class ReviewsController < ApplicationController
     if @review.save
       redirect_to item_review_path(@item, @review)
     else
+      flash[:error] = "review did not create"
       render :new
     end
   end
