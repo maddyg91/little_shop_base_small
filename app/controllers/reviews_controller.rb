@@ -64,7 +64,7 @@ class ReviewsController < ApplicationController
   def destroy
     @item = Item.find(params[:item_id])
     @review = Review.find(params[:id])
-    if disabling_reviewer? || current_admin?
+    if reviewer? || current_admin?
       if @review.destroy
         flash[:success] = "Your review is deleted"
       else
@@ -83,7 +83,11 @@ class ReviewsController < ApplicationController
   end
 
   def disabling_reviewer?
-    current_user.id == @review.user_id && params[:review] && params[:review][:active] == "false"
+    reviewer? && params[:review] && params[:review][:active] == "false"
+  end
+
+  def reviewer?
+    current_user.id == @review.user_id
   end
 
 end
