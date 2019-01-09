@@ -87,7 +87,7 @@ RSpec.describe User, type: :model do
       @user_3 = create(:user, city: 'Seattle', state: 'WA')
       @user_4 = create(:user, city: 'Seattle', state: 'FL')
       @user_5 = create(:inactive_user)
-      @user_6 = create(:user)
+      @user_6 = create(:user, orders: [])
 
       @merchant_1, @merchant_2, @merchant_3 = create_list(:merchant, 3)
       @item_1 = create(:item, user: @merchant_1)
@@ -109,9 +109,14 @@ RSpec.describe User, type: :model do
       @order_5 = create(:completed_order, user: @user_1)
       @oi_4 = create(:fulfilled_order_item, item: @item_3, order: @order_5, quantity: 201, price: 200, created_at: 10.minutes.ago, updated_at: 5.minute.ago)
     end
-    it '.current_users' do
+    it '.current_costumers' do
 
-      expect(User.current_users(@merchant_1)).to eq([@user_1])
+      expect(User.current_costumers(@merchant_1)).to eq([@user_1])
+    end
+
+    it '.potential_costumers' do
+
+      expect(User.potential_costumers(@merchant_1)).to eq([@user_2, @user_3, @user_4, @user_6])
     end
 
     it '#total_spent' do
@@ -121,6 +126,11 @@ RSpec.describe User, type: :model do
     it '#total_spent_for_merchant' do
 
       expect(@user_1.total_spent_for_merchant(@merchant_1)).to eq(10_000)
+    end
+
+    it '#total_orders' do
+
+      expect(@user_2.total_orders).to eq(1)
     end
   end
 

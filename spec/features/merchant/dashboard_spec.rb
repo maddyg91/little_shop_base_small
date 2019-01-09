@@ -23,7 +23,7 @@ RSpec.describe 'Merchant Dashboard page' do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant)
       visit dashboard_path
 
-      expect(page).to have_link("Current Users")
+      expect(page).to have_link("Current Customers")
     end
     describe 'should show pending orders containing items I sell' do
       scenario "unless I don't have any..." do

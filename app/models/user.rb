@@ -115,11 +115,11 @@ class User < ApplicationRecord
       .limit(3)
   end
 
-  def self.to_current_users_csv(merchant, attributes = {})
+  def self.to_current_costumers_csv(merchant, attributes = {})
     attributes = %w{name email total_spent_for_merchant total_spent}
     CSV.generate(headers: true) do |csv|
       csv << attributes
-      current_users(merchant).each do |user|
+      current_costumers(merchant).each do |user|
         csv << attributes.map do |attr|
           if attr == "total_spent_for_merchant"
             user.send(attr, merchant)
@@ -127,6 +127,16 @@ class User < ApplicationRecord
             user.send(attr)
           end
         end
+      end
+    end
+  end
+
+  def self.to_potential_costumers_csv(attributes = {})
+    attributes = %w{name email total_spent total_orders}
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+      potential_costumers(merchant).each do |user|
+        csv << attributes.map{|attr| user.send(attr)}
       end
     end
   end
@@ -147,7 +157,14 @@ class User < ApplicationRecord
       .sum('order_items.quantity * order_items.price')
   end
 
-  def self.current_users(merchant)
+  def total_orders
+    self.orders.joins(:order_items)
+        .where(status: :completed)
+        .where("order_items.fulfilled=?", true)
+        .count
+  end
+
+  def self.current_costumers(merchant)
         where(role: "default")
         .joins(order_items: :item)
         .where(active: true)
@@ -156,11 +173,9 @@ class User < ApplicationRecord
         .group(:id)
   end
 
-  def self.potential_users(merchant)
+  def self.potential_costumers(merchant)
         where(role: "default")
-        .joins(order_items: :item)
         .where(active: true)
-        .where.not("items.merchant_id = ?", merchant.id)
-        .group(:id)
+        .where.not(id: current_costumers(merchant))
   end
 end

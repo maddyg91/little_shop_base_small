@@ -8,7 +8,8 @@
   <% end %>
 <% end %>
 <div class="current_users">
-  <%= link_to "Current Users", "/dashboard/users(.:csv)"%>
+  <%= link_to "Current Customers", dashboard_users_path(format: "csv")%>
+  <%= link_to "Potential Customers", dashboard_users_path(format: "csv")%>
 </div>
 <% if current_admin? %>
 <%= link_to 'My Items', admin_merchant_items_path(@merchant) %>
