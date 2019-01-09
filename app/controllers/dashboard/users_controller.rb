@@ -5,7 +5,7 @@ class Dashboard::UsersController < Dashboard::BaseController
     @users = User.current_users(@merchant)
    respond_to do |format|
      format.html
-     format.csv { send_data @users.to_csv }
+     format.csv { send_data @users.to_current_users_csv(@merchant) }
    end
   end
 end

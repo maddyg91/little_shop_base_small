@@ -105,6 +105,9 @@ RSpec.describe User, type: :model do
 
       @order_4 = create(:completed_order, user: @user_4)
       @oi_4 = create(:fulfilled_order_item, item: @item_3, order: @order_4, quantity: 201, price: 200, created_at: 10.minutes.ago, updated_at: 5.minute.ago)
+
+      @order_5 = create(:completed_order, user: @user_1)
+      @oi_4 = create(:fulfilled_order_item, item: @item_3, order: @order_5, quantity: 201, price: 200, created_at: 10.minutes.ago, updated_at: 5.minute.ago)
     end
     it '.current_users' do
 
@@ -112,11 +115,13 @@ RSpec.describe User, type: :model do
     end
 
     it '#total_spent' do
-      expect(User.total_spent).to be_kind_of(ActiveRecord::Relation)
-
-      expect(User.total_spent.first.total_spent).to eq(10000)
+      expect(@user_1.total_spent).to eq(50_200)
     end
 
+    it '#total_spent_for_merchant' do
+
+      expect(@user_1.total_spent_for_merchant(@merchant_1)).to eq(10_000)
+    end
   end
 
   describe 'instance methods' do

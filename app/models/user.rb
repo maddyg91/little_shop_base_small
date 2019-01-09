@@ -115,25 +115,36 @@ class User < ApplicationRecord
       .limit(3)
   end
 
-  def self.to_csv(attributes = {})
+  def self.to_current_users_csv(merchant, attributes = {})
     attributes = %w{name email total_spent_for_merchant total_spent}
     CSV.generate(headers: true) do |csv|
       csv << attributes
-      all.each do |data|
-        csv << attributes.map{|attr| data.send(attr)}
+      current_users(merchant).each do |user|
+        csv << attributes.map do |attr|
+          if attr == "total_spent_for_merchant"
+            user.send(attr, merchant)
+          else
+            user.send(attr)
+          end
+        end
       end
     end
   end
 
-  def self.total_spent_for_merchant
-
+  def total_spent_for_merchant(merchant)
+   self.orders.joins(:order_items)
+       .where(status: :completed)
+       .joins(order_items: :item)
+       .where("order_items.fulfilled=?", true)
+       .where(items: {merchant_id: merchant})
+       .sum('order_items.quantity * order_items.price')
   end
 
-  def self.total_spent
-       joins(:order_items)
-       .group(:id, :name, :email)
-       .select(:id)
-       .select("SUM(order_items.price * order_items.quantity) AS total_spent")
+  def total_spent
+  self.orders.joins(:order_items)
+      .where(status: :completed)
+      .where("order_items.fulfilled=?", true)
+      .sum('order_items.quantity * order_items.price')
   end
 
   def self.current_users(merchant)
