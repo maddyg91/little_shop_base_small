@@ -24,6 +24,28 @@ RSpec.describe 'Merchant Dashboard page' do
       visit dashboard_path
 
       expect(page).to have_link("Current Customers")
+
+      click_on "Current Customers"
+
+      expect(current_path).to eq(dashboard_users_path(format: "csv"))
+    end
+    it 'should see a link to current users' do
+      merchant = create(:merchant)
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant)
+      visit dashboard_path
+
+      expect(page).to have_link("Potential Customers")
+    end
+    it 'should see a link to current users' do
+      merchant = create(:merchant)
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant)
+      visit dashboard_path
+
+      expect(page).to have_link("Potential Customers")
+
+      click_on "Potential Customers"
+
+      expect(current_path).to eq(dashboard_potential_path(format: "csv"))
     end
     describe 'should show pending orders containing items I sell' do
       scenario "unless I don't have any..." do
