@@ -1,6 +1,6 @@
 class ReviewsController < ApplicationController
   before_action :require_current_user
-  
+
   def index
     @item = Item.find(params[:item_id])
     @reviews = @item.reviews
@@ -56,8 +56,6 @@ class ReviewsController < ApplicationController
      else
        flash[:error] = "Update failed"
      end
-   else
-     flash[:error] = "Action not permitted"
    end
     redirect_to item_review_path(params[:item_id], params[:id])
   end

@@ -131,7 +131,7 @@ class User < ApplicationRecord
     end
   end
 
-  def self.to_potential_costumers_csv(merchant)
+  def self.to_potential_costumers_csv(merchant, attributes = {})
     attributes = %w{name email total_spent total_orders}
     CSV.generate(headers: true) do |csv|
       csv << attributes
