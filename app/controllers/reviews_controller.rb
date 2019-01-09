@@ -1,5 +1,6 @@
 class ReviewsController < ApplicationController
-
+  before_action :require_current_user
+  
   def index
     @item = Item.find(params[:item_id])
     @reviews = @item.reviews
@@ -18,8 +19,8 @@ class ReviewsController < ApplicationController
 
   def create
     @item = Item.find(params[:item_id])
-    @review = @item.reviews.build(review_params)
-    @review.user = current_user || current_admin?
+    @review = @item.reviews.new(review_params)
+    @review.user = current_user
     if @review.save
       redirect_to item_review_path(@item, @review)
     else
