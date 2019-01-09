@@ -115,7 +115,7 @@ class User < ApplicationRecord
       .limit(3)
   end
 
-  def self.to_current_costumers_csv(merchant, attributes = {})
+  def self.to_current_costumers_csv(merchant)
     attributes = %w{name email total_spent_for_merchant total_spent}
     CSV.generate(headers: true) do |csv|
       csv << attributes
@@ -131,12 +131,14 @@ class User < ApplicationRecord
     end
   end
 
-  def self.to_potential_costumers_csv(attributes = {})
+  def self.to_potential_costumers_csv(merchant)
     attributes = %w{name email total_spent total_orders}
     CSV.generate(headers: true) do |csv|
       csv << attributes
       potential_costumers(merchant).each do |user|
-        csv << attributes.map{|attr| user.send(attr)}
+        csv << attributes.map do |attr|
+          user.send(attr)
+        end
       end
     end
   end

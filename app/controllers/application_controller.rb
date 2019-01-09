@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
-  helper_method :current_user, :current_merchant?, :current_admin?
+  helper_method :current_user, :current_merchant?, :current_admin?, :require_current_user
 
   before_action :build_cart
 
@@ -15,6 +15,10 @@ class ApplicationController < ActionController::Base
 
   def current_admin?
     current_user && current_user.admin?
+  end
+
+  def require_current_user
+    render file: "/public/404", status: :not_found unless current_user
   end
 
   def build_cart
