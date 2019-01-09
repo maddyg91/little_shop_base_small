@@ -23,7 +23,9 @@ Rails.application.routes.draw do
 
   get '/dashboard', to: 'merchants#show', as: 'dashboard'
   namespace :dashboard do
-    resources :users, only: [:index] 
+    resources :users, only: [:index]
+    get '/potential', to: 'users#potential'
+
     resources :orders, only: [:show] do
       patch '/items/:id/fulfill', to: 'orders#fulfill_item', as: 'item_fulfill'
     end
